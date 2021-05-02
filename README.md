@@ -10,6 +10,7 @@ set up for arch, manjaro, garuda
 ### mongodb https://stackoverflow.com/questions/59455725/install-mongodb-on-manjaro
 ### mongodb-compass `pamac build mongodb-compass-beta-bin`   
 ### redis https://discover.manjaro.org/packages/redis
+### docker https://discover.manjaro.org/packages/docker
 ### font firacode https://github.com/tonsky/FiraCode
 ### kitty terminal https://discover.manjaro.org/applications/kitty   
   line 9 : font_family FiraCode    
