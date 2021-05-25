@@ -18,7 +18,7 @@ set up for arch, manjaro, garuda
   line 9 : font_family FiraCode    
   line 26 : font_size 12.0    
 #### IN Layout managemant  
-`enabled_layouts grid                                                           
+```enabled_layouts grid                                                           
 map shift+up move_window up                                                   
 map shift+left move_window left                                                
 map shift+right move_window right                                              
@@ -27,4 +27,4 @@ map shift+down move_window down
 map ctrl+left neighboring_window left                                          
 map ctrl+right neighboring_window right                                        
 map ctrl+up neighboring_window up                                              
-map ctrl+down neighboring_window down`
+map ctrl+down neighboring_window down```
