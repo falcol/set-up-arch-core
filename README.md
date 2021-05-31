@@ -13,6 +13,8 @@ set up for arch, manjaro, garuda
 ### docker https://discover.manjaro.org/packages/docker
 ### docker-compose https://discover.manjaro.org/packages/docker-compose
 ### font firacode https://github.com/tonsky/FiraCode
+### ibus-bamboo https://forum.manjaro.org/t/cai-d-t-ibus-bamboo-d-go-ti-ng-vi-t-tren-manjaro/7586
+if error https://wiki.archlinux.org/title/IBus#Initial_setup
 
 ### kitty terminal https://discover.manjaro.org/applications/kitty   
   line 9 : font_family FiraCode    
