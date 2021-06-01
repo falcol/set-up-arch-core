@@ -1,3 +1,24 @@
+# install garuda
+## create usb: 
+```
+burn usb:  sudo dd bs=4M if=/path/to/file.iso of=/dev/sd[drive letter] status=progress oflag=sync
+check sd:  `sudo fdisk -l`
+```
+
+```
+size    file         flags     mount
+512MB   fat32        boot      boot/efi
+16G     linuxswap    swap       None    
+all     btrfs                   /
+```
+# install manjaro
+```
+size      file     flags      mount
+512MB     fat32    boot       boot/efi
+25G       ext4                 /
+30G       ext4                 /home
+```
+change mirror manjaro: ```sudo pacman-mirrors -s --country Japan,Singapore,Hong_Kong,South_Korea,Germany,Netherlands```
 # set-up-arch-core 
 set up for arch, manjaro, garuda
 
