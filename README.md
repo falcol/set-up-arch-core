@@ -18,7 +18,13 @@ size      file     flags      mount
 25G       ext4                 /
 30G       ext4                 /home
 ```
-change mirror manjaro: ```sudo pacman-mirrors -s --country Japan,Singapore,Hong_Kong,South_Korea,Germany,Netherlands```
+change mirror: 
+```
+  - manjaro
+   sudo pacman-mirrors -s --country Japan,Singapore,Hong_Kong,South_Korea,Germany,Netherlands
+   sudo pacman -Syy
+  - garuda: reflector
+```
 # set-up-arch-core 
 set up for arch, manjaro, garuda
 
