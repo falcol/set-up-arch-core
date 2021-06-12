@@ -11,6 +11,8 @@ size    file         flags     mount
 16G     linuxswap    swap       None    
 all     btrfs                   /
 ```
+or https://www.hacknos.com/garuda-linux-installation/
+
 # install manjaro
 ```
 size      file     flags      mount
