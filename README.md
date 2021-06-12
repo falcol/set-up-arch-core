@@ -15,10 +15,11 @@ or https://www.hacknos.com/garuda-linux-installation/
 
 # install manjaro
 ```
-size      file     flags      mount
-512MB     fat32    boot       boot/efi
-25G       ext4                 /
-30G       ext4                 /home
+size      file          flags      mount
+512MB     fat32        boot        boot/efi
+16G       linuxswap    swap        None 
+25G       ext4                     /
+30G       ext4                     /home
 ```
 change mirror: 
 ```
