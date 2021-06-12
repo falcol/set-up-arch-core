@@ -40,6 +40,7 @@ set up for arch, manjaro, garuda
 ### docker https://discover.manjaro.org/packages/docker
 ### docker-compose https://discover.manjaro.org/packages/docker-compose
 ### font firacode https://github.com/tonsky/FiraCode
+### font microsoft https://aur.archlinux.org/packages/ttf-ms-fonts/
 ### ibus-bamboo https://forum.manjaro.org/t/cai-d-t-ibus-bamboo-d-go-ti-ng-vi-t-tren-manjaro/7586 or https://github.com/BambooEngine/ibus-bamboo
 ````
 export GTK_IM_MODULE=xim or ibus
