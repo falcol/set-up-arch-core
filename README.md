@@ -26,7 +26,7 @@ change mirror:
   - manjaro
    sudo pacman-mirrors -s --country Japan,Singapore,Hong_Kong,South_Korea,Germany,Netherlands
    sudo pacman -Syy
-  - garuda: reflector
+  - garuda: sudo reflector --latest 5 --age 2 --fastest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && cat /etc/pacman.d/mirrorlist && sudo pacman -Syu
 ```
 # set-up-arch-core 
 set up for arch, manjaro, garuda
