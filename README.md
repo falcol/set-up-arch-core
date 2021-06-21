@@ -30,7 +30,7 @@ change mirror:
 ```
 # set-up-arch-core 
 set up for arch, manjaro, garuda
-
+### 15 things manjaro https://www.fosslinux.com/46741/things-to-do-after-installing-manjaro.htm
 ### open aur : add/remove software => preferences => enable AUR    
 ### install git `sudo pacman -S git`    
 ### vim-plug https://github.com/falcol/vim-plug-install
