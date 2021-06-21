@@ -45,6 +45,7 @@ set up for arch, manjaro, garuda
 ### font firacode https://github.com/tonsky/FiraCode
 ### font microsoft https://aur.archlinux.org/packages/ttf-ms-fonts/
 ### zsh https://gist.github.com/yovko/becf16eecd3a1f69a4e320a95689249e
+### neofetch https://forum.manjaro.org/t/how-to-install-and-run-screenfetch-or-neofetch/10469
 ### ibus-bamboo https://forum.manjaro.org/t/cai-d-t-ibus-bamboo-d-go-ti-ng-vi-t-tren-manjaro/7586 or https://github.com/BambooEngine/ibus-bamboo
 ````
 export GTK_IM_MODULE=xim or ibus
