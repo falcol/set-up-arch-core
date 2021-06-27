@@ -1,4 +1,15 @@
 #!/bin/bash
+echo "first"
+sudo pacman-mirrors --fasttrack
+sudo pacman -Syyu
+sudo systemctl enable fstrim.timer
+sudo systemctl start fstrim.timer
+sudo pacman -S ufw
+sudo pacman -S gufw
+sudo ufw enable
+sudo systemctl enable ufw
+
+echo "install program"
 sudo pacman -S telegram-desktop
 sudo pacman -S kitty
 sudo pamac build mongodb-bin
