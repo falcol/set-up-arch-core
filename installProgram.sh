@@ -1,5 +1,6 @@
 #!/bin/bash
 sudo pacman -S telegram-desktop
+sudo pacman -S kitty
 sudo pamac build mongodb-bin
 sudo pamac build mongodb-compass-beta-bin
 sudo pacman -S redis
@@ -10,6 +11,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 sudo systemctl enable docker.service
 sudo pacman -S gnome-keyring
+sudo pacman -S neofetch 
 
 mkdir setUp
 
@@ -53,6 +55,14 @@ cd wps-office
 makepkg -si
 cd
 
+echo "font MS"
+cd setUp
+git clone https://aur.archlinux.org/ttf-ms-fonts.git
+cd ttf-ms-fonts
+makepkg -si
+cd
+
 echo "ibus"
+sudo pamac install ibus
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/BambooEngine/ibus-bamboo/master/archlinux/install.sh)"
 
