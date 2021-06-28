@@ -28,6 +28,8 @@ change mirror:
    sudo pacman -Syy
   - garuda: sudo reflector --latest 5 --age 2 --fastest 5 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && cat /etc/pacman.d/mirrorlist && sudo pacman -Syu
 ```
+### run sh `chmod u+x name.sh`
+
 # set-up-arch-core 
 set up for arch, manjaro, garuda
 ### 15 things manjaro https://www.fosslinux.com/46741/things-to-do-after-installing-manjaro.htm
