@@ -22,7 +22,6 @@ sudo usermod -aG docker $USER
 newgrp docker
 sudo systemctl enable docker.service
 sudo pacman -S gnome-keyring
-sudo pacman -S neofetch 
 
 mkdir setUp
 
