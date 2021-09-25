@@ -50,7 +50,7 @@ set up for arch, manjaro, garuda
 ### neofetch https://forum.manjaro.org/t/how-to-install-and-run-screenfetch-or-neofetch/10469
 ### ibus-bamboo https://forum.manjaro.org/t/cai-d-t-ibus-bamboo-d-go-ti-ng-vi-t-tren-manjaro/7586 or https://github.com/BambooEngine/ibus-bamboo
 ### latte-dock `pacman -S latte-dock`
-### config postgresql https://www.youtube.com/watch?v=qtCeXcwIEAQ
+### config postgresql https://www.youtube.com/watch?v=qtCeXcwIEAQ https://tusharsadhwani.medium.com/how-to-setup-postgresql-and-pgadmin-on-manjaro-linux-arch-a76fa4404862 
 ````
 export GTK_IM_MODULE=xim or ibus
 export QT_IM_MODULE=ibus
