@@ -84,3 +84,5 @@ map ctrl+right neighboring_window right
 map ctrl+up neighboring_window up                                              
 map ctrl+down neighboring_window down
 ```
+
+change python version: https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
