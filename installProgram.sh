@@ -35,20 +35,12 @@ cd
 sudo pacman -S nodejs npm
 
 echo "chrome"
-sudo pacman -S --needed base-devel git
-cd setUp
-git clone https://aur.archlinux.org/yay-git.git
-cd yay-git
-makepkg -si
-cd
-yay -S google-chrome
+
+sudo pamac install google-chrome
 cd
 
 echo "vscode"
-cd setUp
-git clone https://aur.archlinux.org/visual-studio-code-bin.git
-cd visual-studio-code-bin/
-makepkg -si
+sudo pamac install visual-studio-code-bin
 cd
 
 echo "ZSH"
@@ -59,17 +51,12 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 
 echo "wps"
 cd
-cd setUp
-git clone https://aur.archlinux.org/wps-office.git
-cd wps-office
+sudo pamac install wps-office
 makepkg -si
 cd
 
 echo "font MS"
-cd setUp
-git clone https://aur.archlinux.org/ttf-ms-fonts.git
-cd ttf-ms-fonts
-makepkg -si
+sudo pamac install ttf-ms-fonts
 cd
 
 echo "ibus"
