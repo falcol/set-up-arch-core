@@ -86,3 +86,5 @@ map ctrl+down neighboring_window down
 ```
 
 change python version: https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux
+
+sudo docker rmi $(docker images -a| grep "^<none>" | awk '{ print $3 }')
