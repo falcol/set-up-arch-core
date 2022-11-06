@@ -57,6 +57,7 @@ cd
 
 echo "font MS"
 sudo pamac install ttf-ms-fonts
+sudo pamac install ttf-fira-code
 cd
 
 echo "ibus"
