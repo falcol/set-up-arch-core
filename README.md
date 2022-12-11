@@ -44,7 +44,7 @@ set up for arch, manjaro, garuda
 ### redis https://discover.manjaro.org/packages/redis
 ### docker https://discover.manjaro.org/packages/docker
 ### docker-compose https://discover.manjaro.org/packages/docker-compose
-### font firacode https://github.com/tonsky/FiraCode
+### font firacode https://www.nerdfonts.com/font-downloads
 ### font microsoft https://aur.archlinux.org/packages/ttf-ms-fonts/
 ### zsh https://gist.github.com/yovko/becf16eecd3a1f69a4e320a95689249e
 ### neofetch https://forum.manjaro.org/t/how-to-install-and-run-screenfetch-or-neofetch/10469
