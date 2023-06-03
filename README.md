@@ -90,6 +90,7 @@ change python version: https://linuxconfig.org/how-to-change-from-default-to-alt
 
 sudo docker rmi $(docker images -a| grep "^<none>" | awk '{ print $3 }')
 
-#ubuntu
-###chrome: https://itsfoss.com/install-chrome-ubuntu/
-###powerlevel10k https://gist.github.com/cristian-aldea/c8f91187de922303fa10c6e5fd85e324
+# ubuntu
+
+### chrome: https://itsfoss.com/install-chrome-ubuntu/
+### powerlevel10k https://gist.github.com/cristian-aldea/c8f91187de922303fa10c6e5fd85e324
