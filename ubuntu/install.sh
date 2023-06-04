@@ -3,6 +3,7 @@ BASE_DIR=$PWD
 
 sudo apt update
 sudo apt install vim git curl unzip firefox thunderbird openvpn tmux fzf -y
+sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 
 # Install ibus-bamboo
 sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
@@ -23,11 +24,6 @@ sudo apt-get install fluxgui -y
 
 # Install dash to dock
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
-
-## NODEJS
-sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt -y install nodejs
 
 ## FONTS
 mkdir -p ~/.local/share/fonts
@@ -53,6 +49,11 @@ echo "source /usr/share/doc/fzf/examples/key-bindings.bash" >> ~/.bashrc
 echo "source /usr/share/doc/fzf/examples/completion.bash" >> ~/.bashrc
 . ~/.bashrc
 
+## NODEJS
+cd ~
+curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+sudo bash nodesource_setup.sh
+sudo apt install nodejs
 
 # install vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
