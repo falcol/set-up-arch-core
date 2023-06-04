@@ -95,3 +95,4 @@ sudo docker rmi $(docker images -a| grep "^<none>" | awk '{ print $3 }')
 ### chrome: https://itsfoss.com/install-chrome-ubuntu/
 ### powerlevel10k https://gist.github.com/cristian-aldea/c8f91187de922303fa10c6e5fd85e324
 ### acpi ae not fiund https://askubuntu.com/questions/1411354/ubuntu-22-04-acpi-bios-error-bug
+#### tmux auto srart ZSH_TMUX_AUTOSTART=true
