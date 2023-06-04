@@ -15,12 +15,11 @@ env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['Bamb
 # Install telegram
 sudo apt install telegram-desktop
 
-# Install flux
-sudo add-apt-repository ppa:nathan-renniewaldock/flux -y
-sudo sed -i 's/focal/bionic/g' /etc/apt/sources.list.d/nathan-renniewaldock-ubuntu-flux-focal.list
-sudo apt-get update
-sudo apt-get install fluxgui -y
-
+## NODEJS
+cd ~
+curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+sudo bash nodesource_setup.sh
+sudo apt install nodejs
 
 # Install dash to dock
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
@@ -48,12 +47,6 @@ echo 'export PATH="~/.local/bin:$PATH"' >> ~/.bashrc
 echo "source /usr/share/doc/fzf/examples/key-bindings.bash" >> ~/.bashrc
 echo "source /usr/share/doc/fzf/examples/completion.bash" >> ~/.bashrc
 . ~/.bashrc
-
-## NODEJS
-cd ~
-curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
-sudo bash nodesource_setup.sh
-sudo apt install nodejs
 
 # install vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
