@@ -18,7 +18,7 @@ sudo apt install telegram-desktop
 ## NODEJS
 curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
 sudo bash nodesource_setup.sh
-sudo apt install nodejs
+sudo apt install nodejs -y
 
 # Install dash to dock
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
