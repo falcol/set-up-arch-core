@@ -16,7 +16,7 @@ env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['Bamb
 sudo apt install telegram-desktop
 
 ## NODEJS
-curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
 sudo bash nodesource_setup.sh
 sudo apt install nodejs -y
 
