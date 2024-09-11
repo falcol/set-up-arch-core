@@ -13,7 +13,9 @@ ibus restart
 env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['BambooUs', 'Bamboo']" && gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
 
 # Install telegram
-sudo apt install telegram-desktop
+# sudo apt install telegram-desktop
+sudo apt install snapd
+sudo snap install telegram-desktop
 
 ## NODEJS
 curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
