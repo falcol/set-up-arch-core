@@ -5,6 +5,10 @@ sudo apt update
 sudo apt install vim git curl unzip firefox thunderbird openvpn tmux fzf -y
 sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 
+# install chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+
 # Install ibus-bamboo
 sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
 sudo apt-get update
@@ -55,3 +59,17 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
 # install vim plugins
 vim +PlugInstall +qall
+
+# install ohmyzsh
+cd
+sudo apt install zsh-autosuggestions zsh-syntax-highlighting zsh -y
+# Set the default shell to zsh
+sudo chsh -s $(which zsh) $(whoami)
+# Install oh-my-zsh: https://ohmyz.sh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# Install Powerlevel10k: https://github.com/romkatv/powerlevel10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
