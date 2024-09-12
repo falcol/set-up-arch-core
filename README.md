@@ -98,4 +98,4 @@ sudo docker rmi $(docker images -a| grep "^<none>" | awk '{ print $3 }')
 ### acpi ae not fiund https://askubuntu.com/questions/1411354/ubuntu-22-04-acpi-bios-error-bug
 #### tmux auto srart ZSH_TMUX_AUTOSTART=true
 ### node https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04
-### https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df
+### power10k https://gist.github.com/n1snt/454b879b8f0b7995740ae04c5fb5b7df
