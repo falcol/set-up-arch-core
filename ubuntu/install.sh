@@ -18,11 +18,14 @@ env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['Bamb
 
 # Install telegram
 # sudo apt install telegram-desktop
-sudo apt install snapd
-sudo snap install telegram-desktop
+# sudo apt install snapd
+# sudo snap install telegram-desktop
+
+# Install flatpak https://flatpak.org/setup/Ubuntu
+flatpak install flathub org.telegram.desktop
 
 ## NODEJS
-curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
+curl -sL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
 sudo bash nodesource_setup.sh
 sudo apt install nodejs -y
 
