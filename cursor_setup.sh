@@ -8,7 +8,7 @@ readonly DOWNLOAD_DIR="$HOME/.AppImage"
 readonly ICON_DIR="$HOME/.local/share/icons"
 readonly USER_DESKTOP_FILE="$HOME/Desktop/cursor.desktop"
 # readonly DOWNLOAD_URL="https://downloader.cursor.sh/linux/appImage/x64"
-readonly CURSOR_API_ENDPOINT="https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
+readonly CURSOR_API_ENDPOINT="https://cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 readonly ICON_URL="https://mintlify.s3-us-west-1.amazonaws.com/cursor/images/logo/app-logo.svg"
 readonly VERSION_CHECK_TIMEOUT=5 # in seconds | if you have a slow connection, increase this value to 10, 15, or more
 readonly SPINNERS=("meter" "line" "dot" "minidot" "jump" "pulse" "points" "globe" "moon" "monkey" "hamburger")
@@ -180,8 +180,9 @@ fetch_remote_version() {
   fi
 
   DOWNLOAD_URL=$(echo "$api_response" | jq -r '.downloadUrl')
+  remote_version=$(echo "$api_response" | jq -r '.version')
   remote_name=$(basename "$DOWNLOAD_URL")
-  remote_version=$(extract_version "$remote_name")
+  # remote_version=$(extract_version "$remote_name")
   remote_md5="N/A"  # API doesn't return this
   remote_size="0"   # Unknown until downloaded
 
