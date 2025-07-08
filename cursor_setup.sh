@@ -7,19 +7,17 @@ readonly SCRIPT_ALIAS_NAME="cursor-setup"
 readonly DOWNLOAD_DIR="$HOME/.AppImage"
 readonly ICON_DIR="$HOME/.local/share/icons"
 readonly USER_DESKTOP_FILE="$HOME/Desktop/cursor.desktop"
-# readonly DOWNLOAD_URL="https://downloader.cursor.sh/linux/appImage/x64"
 readonly CURSOR_API_ENDPOINT="https://cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 readonly ICON_URL="https://mintlify.s3-us-west-1.amazonaws.com/cursor/images/logo/app-logo.svg"
-readonly VERSION_CHECK_TIMEOUT=5 # in seconds | if you have a slow connection, increase this value to 10, 15, or more
-readonly SPINNERS=("meter" "line" "dot" "minidot" "jump" "pulse" "points" "globe" "moon" "monkey" "hamburger")
-readonly SPINNER="${SPINNERS[0]}"
+readonly VERSION_CHECK_TIMEOUT=5
+readonly SPINNER="dot" # Đơn giản hóa spinner cho phiên bản 0.16.0
 readonly DEPENDENCIES=("gum" "curl" "wget" "pv" "bc" "find:findutils" "chmod:coreutils" "timeout:coreutils" "mkdir:coreutils" "apparmor_parser:apparmor-utils")
-readonly GUM_VERSION_REQUIRED="0.14.5"
+readonly GUM_VERSION_REQUIRED="0.16.2" # Cập nhật phiên bản yêu cầu
 readonly SYSTEM_DESKTOP_FILE="$HOME/.local/share/applications/cursor.desktop"
 readonly APPARMOR_PROFILE="/etc/apparmor.d/cursor-appimage"
 readonly RC_FILES=("bash:$HOME/.bashrc" "zsh:$HOME/.zshrc")
 SCRIPT_PATH="$HOME/cursor-setup-wizard/cursor_setup.sh"
-## Colors used for UI feedback and styling
+## Colors
 readonly CLR_SCS="#16FF15"
 readonly CLR_INF="#0095FF"
 readonly CLR_BG="#131313"
@@ -108,9 +106,30 @@ check_and_install_dependencies() {
   logg success "All dependencies are good to go!"
 }
 
-show_banner() { clear; gum style --border double --border-foreground="$CLR_PRI" --margin "1 0 2 2" --padding "1 3" --align center --foreground="$CLR_LGT" --background="$CLR_BG" "$(echo -e "🧙 Welcome to the Cursor Setup Wizard! 🎉\n 📡 Effortlessly fetch, download, and configure Cursor. 🔧")"; }
+show_banner() {
+  clear
+  gum style \
+    --border double \
+    --border-foreground "$CLR_PRI" \
+    --margin "1 0 2 2" \
+    --padding "1 3" \
+    --align center \
+    --foreground "$CLR_LGT" \
+    --background "$CLR_BG" \
+    "🧙 Welcome to the Cursor Setup Wizard! 🎉" \
+    "📡 Effortlessly fetch, download, and configure Cursor. 🔧"
+}
 
-show_balloon() { gum style --border double --border-foreground="$CLR_PRI" --margin "1 2" --padding "1 1" --align center --foreground="$CLR_LGT" "$1"; }
+show_balloon() {
+  gum style \
+    --border double \
+    --border-foreground "$CLR_PRI" \
+    --margin "1 2" \
+    --padding "1 1" \
+    --align center \
+    --foreground "$CLR_LGT" \
+    "$1"
+}
 
 nostyle() {
   echo "$1" | sed -r 's/\x1B\[[0-9;]*[a-zA-Z]//g'
@@ -144,28 +163,48 @@ spinner() {
 
 sudo_please() {
   while true; do
-    [[ -z "$sudo_pass" ]] && sudo_pass=$(gum input --password --placeholder "Please enter your 'sudo' password: " --header=" 🛡️  Let's keep things secure. " --header.foreground="$CLR_LGT" --header.background="$CLR_PRI" --header.margin="1 0 1 2" --header.align="center" --cursor.background="$CLR_LGT" --cursor.foreground="$CLR_PRI" --prompt="🗝️  ")
+    [[ -z "$sudo_pass" ]] && {
+      sudo_pass=$(gum input \
+        --password \
+        --prompt "🗝️ " \
+        --placeholder "Please enter your 'sudo' password: " \
+        --header "🛡️ Let's keep things secure." \
+        --header.foreground "$CLR_LGT" \
+        --header.align center)
+    }
     echo "$sudo_pass" | sudo -S -k true >/dev/null 2>&1 && break
-    logg error "Oops! The password was incorrect. Try again."; sudo_pass=""
+    logg error "Oops! The password was incorrect. Try again."
+    sudo_pass=""
   done
 }
 
 logg() {
   local TYPE="$1" MSG="$2"
-  local SYMBOL="" COLOR="" LABEL="" BGCOLOR="" FG=""
+  local SYMBOL="" COLOR="" LABEL="" BGCOLOR=""
   GUM_AVAILABLE=$(command -v gum >/dev/null && echo true || echo false)
   case "$TYPE" in
-    error) SYMBOL="$(echo -e "\n ✖")"; COLOR="$CLR_ERR"; LABEL=" ERROR "; BGCOLOR="$CLR_ERR"; FG="--foreground=$CLR_BG" ;;
-    info) SYMBOL=" »"; COLOR="$CLR_INF" ;;
+    error) SYMBOL="✖"; COLOR="$CLR_ERR"; LABEL=" ERROR "; BGCOLOR="$CLR_ERR" ;;
+    info) SYMBOL="»"; COLOR="$CLR_INF" ;;
     md) command -v glow >/dev/null && glow "$MSG" || cat "$MSG"; return ;;
-    prompt) SYMBOL=" ▶"; COLOR="$CLR_PRI" ;;
-    star) SYMBOL=" ◆"; COLOR="$CLR_WRN" ;;
-    start|success) SYMBOL=" ✔"; COLOR="$CLR_SCS" ;;
-    warn) SYMBOL="$(echo -e "\n ◆")"; COLOR="$CLR_WRN"; LABEL=" WARNING "; BGCOLOR="$CLR_WRN"; FG="--foreground=$CLR_BG" ;;
+    prompt) SYMBOL="▶"; COLOR="$CLR_PRI" ;;
+    star) SYMBOL="◆"; COLOR="$CLR_WRN" ;;
+    start|success) SYMBOL="✔"; COLOR="$CLR_SCS" ;;
+    warn) SYMBOL="◆"; COLOR="$CLR_WRN"; LABEL=" WARNING "; BGCOLOR="$CLR_WRN" ;;
     *) echo "$MSG"; return ;;
   esac
-  { $GUM_AVAILABLE && gum style "$(gum style --foreground="$COLOR" "$SYMBOL") $(gum style --bold ${BGCOLOR:+--background="$BGCOLOR"} ${FG:-} "${LABEL:-}") $(gum style "$MSG")"; } || { echo "${TYPE^^}: $MSG"; }
-  return 0
+
+  if $GUM_AVAILABLE; then
+    # Cập nhật cho Gum 0.16.0
+    local styled_msg
+    styled_msg=$(gum style --foreground="$COLOR" "$SYMBOL")
+    if [[ -n "$LABEL" ]]; then
+      styled_msg+=" $(gum style --background="$BGCOLOR" --foreground="$CLR_BG" --bold "$LABEL")"
+    fi
+    styled_msg+=" $(gum style "$MSG")"
+    echo "$styled_msg"
+  else
+    echo "${TYPE^^}: $MSG"
+  fi
 }
 
 fetch_remote_version() {
@@ -428,16 +467,31 @@ menu() {
   local option
   show_banner
   while true; do
-    all_in_one=$(gum style --foreground="$CLR_LGT" --bold "All-in-One (fetch, download & configure all)")
-    update_cursor=$(gum style --foreground="$CLR_LGT" --bold "Update Cursor (check & update to latest version)")
-    reconfigure_all=$(gum style --foreground="$CLR_LGT" --bold "Reconfigure All (no online fetch)")
-    setup_apparmor=$(gum style --foreground="$CLR_LGT" --bold "Setup AppArmor Profile")
-    add_cli_command=$(gum style --foreground="$CLR_LGT" --bold "Add 'cursor' CLI Command (bash/zsh)")
-    edit_script=$(gum style --foreground="$CLR_LGT" --bold "Edit This Script")
-    _exit=$(gum style --foreground="$CLR_LGT" --italic "Exit")
-    option=$(echo -e "$all_in_one\n$update_cursor\n$reconfigure_all\n$setup_apparmor\n$add_cli_command\n$edit_script\n$_exit" | gum choose --header "🧙 Pick what you'd like to do next:" --header.margin="0 0 0 2" --header.border="rounded" --header.padding="0 2 0 2" --header.italic --header.foreground="$CLR_LGT" --cursor=" ➤ " --cursor.foreground="$CLR_ERR" --cursor.background="$CLR_PRI" --selected.foreground="$CLR_LGT" --selected.background="$CLR_PRI")
+    # Cập nhật style options cho Gum 0.16.0
+    local options=(
+      "All-in-One (fetch, download & configure all)"
+      "Update Cursor (check & update to latest version)"
+      "Reconfigure All (no online fetch)"
+      "Setup AppArmor Profile"
+      "Add 'cursor' CLI Command (bash/zsh)"
+      "Edit This Script"
+      "Exit"
+    )
+
+    option=$(gum choose \
+      --header "🧙 Pick what you'd like to do next:" \
+      --header.margin "0 0 0 2" \
+      --header.border rounded \
+      --header.italic \
+      --header.foreground "$CLR_LGT" \
+      --cursor "➤" \
+      --cursor.foreground "$CLR_ERR" \
+      --selected.foreground "$CLR_LGT" \
+      --selected.background "$CLR_PRI" \
+      "${options[@]}")
+
     case "$option" in
-      "$(nostyle "$all_in_one")")
+      "All-in-One"*)
         fetch_remote_version
         if ! find_local_version || [[ "$local_md5" != "$remote_md5" ]]; then
           download_appimage
@@ -447,13 +501,13 @@ menu() {
           add_cli_command
         else
           find_local_version true
-          show_balloon "$(echo -e "🧙 The latest version is already installed and ready to use! 🎈\n🌟 Ready to start coding? Let's build something amazing! 💻")"
+          show_balloon "🧙 The latest version is already installed and ready to use! 🎈"
         fi
         ;;
-      "$(nostyle "$update_cursor")")
+      "Update Cursor"*)
         update_cursor
         ;;
-      "$(nostyle "$reconfigure_all")")
+      "Reconfigure All"*)
         if find_local_version true; then
           download_logo
           setup_launchers
@@ -461,29 +515,43 @@ menu() {
           add_cli_command
         fi
         ;;
-      "$(nostyle "$setup_apparmor")")
+      "Setup AppArmor Profile"*)
         if find_local_version true; then
           configure_apparmor
         fi
         ;;
-      "$(nostyle "$add_cli_command")")
+      "Add 'cursor' CLI Command"*)
         if find_local_version true; then
           add_cli_command
         fi
         ;;
-      "$(nostyle "$edit_script")")
+      "Edit This Script"*)
         edit_this_script
         ;;
-      "$(nostyle "$_exit")")
-          if gum confirm "Are you sure you want to exit?" --show-help --prompt.foreground="$CLR_WRN" --selected.background="$CLR_PRI"; then
-            clear;
-            gum style --border double --border-foreground="$CLR_PRI" --padding "1 3" --margin "1 2" --align center --background "$CLR_BG" --foreground "$CLR_LGT" "$(echo -e "🎩🪄 Thanks for stopping by! Happy coding with Cursor!\n\n Enjoyed this tool? Support it and keep the magic alive!\n☕ Buy me a coffee 🤗\n $(gum style  --foreground="$CLR_WRN" "https://buymeacoffee.com/jorcelinojunior") \n\n Your kindness helps improve this tool for everyone!\n Thank you for your support! 🌻💜 ")"
-            echo -e " \n\n "
-            break
-          fi
+      "Exit"*)
+        if gum confirm "Are you sure you want to exit?" \
+          --prompt.foreground "$CLR_WRN" \
+          --selected.background "$CLR_PRI"; then
+          clear
+          gum style \
+            --border double \
+            --border-foreground "$CLR_PRI" \
+            --padding "1 3" \
+            --margin "1 2" \
+            --align center \
+            --background "$CLR_BG" \
+            --foreground "$CLR_LGT" \
+            "🎩🪄 Thanks for stopping by! Happy coding with Cursor!"
+          break
+        fi
         ;;
     esac
-    if gum confirm "$(echo -e "\nWould you like to do something else?" | gum style --foreground="$CLR_PRI")" --affirmative="《Back" --negative="✖ Close" --show-help --prompt.foreground="$CLR_WRN" --selected.background="$CLR_PRI"; then
+
+    if gum confirm "Would you like to do something else?" \
+      --prompt.foreground "$CLR_WRN" \
+      --selected.background "$CLR_PRI" \
+      --affirmative "Back" \
+      --negative "Close"; then
       show_banner
     else
       break
@@ -498,7 +566,7 @@ main() {
   validate_os
   install_script_alias
   check_and_install_dependencies
-  spinner "Initializing the setup wizard..." "sleep 1"
+  gum spin --spinner "$SPINNER" --title "Initializing the setup wizard..." -- sleep 1
   menu
 }
 
