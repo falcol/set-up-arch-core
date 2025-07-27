@@ -149,7 +149,8 @@ flatpak install flathub com.mattjakeman.ExtensionManager
 ### 2. Icon
 
 * Duyệt thêm icon tại:
-  🔗 [https://www.gnome-look.org/browse?cat=107\&ord=rating](https://www.gnome-look.org/browse?cat=107&ord=rating)
+  🔗 [https://www.gnome-look.org/browse?cat=107\&ord=rating](https://www.gnome-look.org/browse?cat=107&ord=rating)  
+  🔗 [https://draculatheme.com/gtk](https://draculatheme.com/gtk)
 
 * Giải nén vào:
 
