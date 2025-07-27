@@ -17,10 +17,10 @@ sudo dd bs=4M if=/path/to/file.iso of=/dev/sdX status=progress oflag=sync
 sudo fdisk -l
 ````
 
-> 💡 Đảm bảo `of=/dev/sdX` đúng với USB của bạn (KHÔNG có số phân vùng như `/dev/sdb1`)
+> 💡 Đảm bảo `of=/dev/sdX` đúng với USB (KHÔNG có số phân vùng như `/dev/sdb1`)
 ---
 
-Dưới đây là **cấu hình phân vùng Ubuntu mới nhất (chuẩn UEFI)** đã được thêm vào bản `README.md`. Mình giữ đúng style markdown đang dùng:
+Dưới đây là **cấu hình phân vùng Ubuntu mới nhất (chuẩn UEFI)** đã được thêm vào bản `README.md`.
 
 ---
 
@@ -35,11 +35,11 @@ Dưới đây là **cấu hình phân vùng Ubuntu mới nhất (chuẩn UEFI)**
 | 30GB+      | ext4 (hoặc btrfs) |            | `/`         |
 | tùy chọn   | ext4              |            | `/home`     |
 
-> 💡 Bạn **không cần phân vùng BIOS/GRUB** nếu dùng UEFI. Ubuntu installer sẽ tạo ESP và GRUB loader nếu chưa có.
+> 💡 **không cần phân vùng BIOS/GRUB** nếu dùng UEFI. Ubuntu installer sẽ tạo ESP và GRUB loader nếu chưa có.
 
 ---
 
-**Bạn có thể thay thế ext4 bằng btrfs nếu cần snapshot với Timeshift (nếu dùng bản Ubuntu-based hỗ trợ)**
+**Có thể thay thế ext4 bằng btrfs nếu cần snapshot với Timeshift (nếu dùng bản Ubuntu-based hỗ trợ)**
 
 ---
 
