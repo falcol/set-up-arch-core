@@ -5,6 +5,9 @@ sudo apt update
 sudo apt install vim git curl unzip firefox thunderbird openvpn tmux fzf -y
 sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 
+# Improve Laptop Battery:
+sudo apt install tlp tlp-rdw
+
 # install chrome
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
