@@ -106,6 +106,7 @@ chmod u+x name.sh
 ---
 
 ## 🧩 Cài đặt Gnome Extensions
+🔗 [customize-gnome](https://github.com/1amSimp1e/dots?tab=readme-ov-file#gnome)
 
 ### 1. Truy cập website chính:
 
