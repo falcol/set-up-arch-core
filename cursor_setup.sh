@@ -208,54 +208,32 @@ logg() {
 }
 
 fetch_remote_version() {
-  logg prompt "Fetching latest Cursor release metadata..."
-  local html_content
+  logg prompt "Fetching latest Cursor release metadata from official API..."
+  local api_response
 
-  html_content=$(spinner "Querying Cursor download page..." "curl -s \"$CURSOR_API_ENDPOINT\"")
+  api_response=$(spinner "Querying Cursor API..." "curl -s \"$CURSOR_API_ENDPOINT\"")
 
-  if [[ -z "$html_content" ]]; then
-    logg error "Failed to fetch data from Cursor download page."
+  if [[ -z "$api_response" ]]; then
+    logg error "Failed to fetch data from Cursor API. Check your internet connection or try again later."
     return 1
   fi
 
-  # Sử dụng awk để tìm link có chứa "x64" trong toàn bộ thẻ a
-  DOWNLOAD_URL=$(echo "$html_content" | awk '
-    BEGIN { RS="<a "; FS="\"" }
-    /AppImage/ && /x64/ {
-      for (i=1; i<=NF; i++) {
-        if ($i ~ /^href=/) {
-          url = $(i+1)
-          if (url ~ /^\//) {
-            url = "https://cursor.com" url
-          }
-          print url
-          exit
-        }
-      }
-    }
-  ')
-
-  # Fallback: nếu không tìm thấy link x64, tìm link đầu tiên
-  if [[ -z "$DOWNLOAD_URL" ]]; then
-    DOWNLOAD_URL=$(echo "$html_content" | grep -o 'href="[^"]*AppImage[^"]*"' | head -1 | sed 's/href="//;s/"//')
-    if [[ ! "$DOWNLOAD_URL" =~ ^https?:// ]] && [[ "$DOWNLOAD_URL" =~ ^/ ]]; then
-      DOWNLOAD_URL="https://cursor.com${DOWNLOAD_URL}"
-    fi
-  fi
-
+  DOWNLOAD_URL=$(echo "$api_response" | jq -r '.downloadUrl')
+  remote_version=$(echo "$api_response" | jq -r '.version')
   remote_name=$(basename "$DOWNLOAD_URL")
-  remote_version=$(extract_version "$remote_name")
-  remote_md5="N/A"
-  remote_size="0"
+  # remote_version=$(extract_version "$remote_name")
+  remote_md5="N/A"  # API doesn't return this
+  remote_size="0"   # Unknown until downloaded
 
-  if [[ -z "$DOWNLOAD_URL" ]]; then
-    logg error "Could not extract download URL from the page."
+  if [[ -z "$DOWNLOAD_URL" || "$DOWNLOAD_URL" == "null" ]]; then
+    logg error "API did not return a valid download URL."
     return 1
   fi
 
   logg success "Latest release metadata retrieved:"
   logg info "$(printf "  → Name: %s\n  → Version: %s\n  → Download URL: %s\n" "$remote_name" "$remote_version" "$DOWNLOAD_URL")"
 }
+
 
 find_local_version() {
   show_log=${1:-false}
@@ -288,12 +266,14 @@ download_appimage() {
   logg prompt "Starting the download of the latest version..."
   mkdir -p "$DOWNLOAD_DIR"
 
-  # Sử dụng hàm fetch_remote_version đã được sửa để lấy URL
-  if ! fetch_remote_version; then
-    logg error "Failed to get download URL."
+  logg info "Fetching latest download URL from Cursor API..."
+  DOWNLOAD_URL=$(curl -s "$CURSOR_API_ENDPOINT" | jq -r '.downloadUrl')
+  if [[ -z "$DOWNLOAD_URL" || "$DOWNLOAD_URL" == "null" ]]; then
+    logg error "Failed to retrieve the AppImage URL from API. Please check your network or API availability."
     return 1
   fi
 
+  remote_name=$(basename "$DOWNLOAD_URL")
   output_document="$DOWNLOAD_DIR/$remote_name"
 
   logg info "Downloading: $remote_name"
@@ -305,12 +285,6 @@ download_appimage() {
       "curl -L \"$DOWNLOAD_URL\" -o \"$output_document\""
   else
     logg error "Neither wget nor curl is available. Please install one of them."
-    return 1
-  fi
-
-  # Kiểm tra xem download có thành công không
-  if [[ ! -f "$output_document" || ! -s "$output_document" ]]; then
-    logg error "Download failed or file is empty."
     return 1
   fi
 
