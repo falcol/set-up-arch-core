@@ -4,15 +4,16 @@ set -euo pipefail
 
 # Constants
 readonly SCRIPT_ALIAS_NAME="cursor-setup"
-readonly DOWNLOAD_DIR="$HOME/.AppImage"
+readonly APPIMAGE_DOWNLOAD_DIR="$HOME/.AppImage"
+readonly DEB_DOWNLOAD_DIR="$HOME/.deb"
 readonly ICON_DIR="$HOME/.local/share/icons"
 readonly USER_DESKTOP_FILE="$HOME/Desktop/cursor.desktop"
 readonly CURSOR_API_ENDPOINT="https://cursor.com/api/download?platform=linux-x64&releaseTrack=stable"
 readonly ICON_URL="https://mintlify.s3-us-west-1.amazonaws.com/cursor/images/logo/app-logo.svg"
 readonly VERSION_CHECK_TIMEOUT=5
 readonly SPINNER="dot" # Đơn giản hóa spinner cho phiên bản 0.16.0
-readonly DEPENDENCIES=("gum" "curl" "wget" "pv" "bc" "find:findutils" "chmod:coreutils" "timeout:coreutils" "mkdir:coreutils" "apparmor_parser:apparmor-utils")
-readonly GUM_VERSION_REQUIRED="0.16.2" # Cập nhật phiên bản yêu cầu
+readonly DEPENDENCIES=("gum" "curl" "wget" "pv" "bc" "find:findutils" "chmod:coreutils" "timeout:coreutils" "mkdir:coreutils" "apparmor_parser:apparmor-utils" "dpkg:dpkg")
+readonly GUM_VERSION_REQUIRED="0.17.0" # Cập nhật phiên bản yêu cầu
 readonly SYSTEM_DESKTOP_FILE="$HOME/.local/share/applications/cursor.desktop"
 readonly APPARMOR_PROFILE="/etc/apparmor.d/cursor-appimage"
 readonly RC_FILES=("bash:$HOME/.bashrc" "zsh:$HOME/.zshrc")
@@ -39,6 +40,7 @@ remote_name=""
 remote_size=""
 remote_version=""
 remote_md5=""
+remote_deb_url=""
 
 # Utility Functions
 validate_os() {
@@ -219,6 +221,7 @@ fetch_remote_version() {
   fi
 
   DOWNLOAD_URL=$(echo "$api_response" | jq -r '.downloadUrl')
+  remote_deb_url=$(echo "$api_response" | jq -r '.debUrl')
   remote_version=$(echo "$api_response" | jq -r '.version')
   remote_name=$(basename "$DOWNLOAD_URL")
   # remote_version=$(extract_version "$remote_name")
@@ -231,25 +234,47 @@ fetch_remote_version() {
   fi
 
   logg success "Latest release metadata retrieved:"
-  logg info "$(printf "  → Name: %s\n  → Version: %s\n  → Download URL: %s\n" "$remote_name" "$remote_version" "$DOWNLOAD_URL")"
+  logg info "$(printf "  → Name: %s\n  → Version: %s\n  → AppImage URL: %s\n  → DEB URL: %s\n" "$remote_name" "$remote_version" "$DOWNLOAD_URL" "$remote_deb_url")"
 }
 
 
-find_local_version() {
+find_local_appimage_version() {
   show_log=${1:-false}
-  [[ $show_log == true ]] && spinner "Searching for a local version..." "sleep 2;"
-  mkdir -p "$DOWNLOAD_DIR"
-  local_path=$(find "$DOWNLOAD_DIR" -maxdepth 1 -type f -name 'Cursor-*.AppImage' -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)
+  [[ $show_log == true ]] && spinner "Searching for a local AppImage version..." "sleep 2;"
+  mkdir -p "$APPIMAGE_DOWNLOAD_DIR"
+  local_path=$(find "$APPIMAGE_DOWNLOAD_DIR" -maxdepth 1 -type f -name 'Cursor-*.AppImage' -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)
   if [[ -n "$local_path" ]]; then
     local_name=$(basename "$local_path")
     local_size=$(stat -c %s "$local_path" 2>/dev/null || echo "0")
     local_version=$(extract_version "$local_path")
     local_md5=$(md5sum "$local_path" | cut -d' ' -f1)
-    [[ $show_log == true ]] && logg info "$(printf "Local version found:\n      - name: %s\n      - version: %s\n      - size: %s\n      - MD5 Hash: %s\n      - path: %s\n" "$local_name" "$local_version" "$(convert_to_mb "$local_size")" "$local_md5" "$local_path")"
+    [[ $show_log == true ]] && logg info "$(printf "Local AppImage version found:\n      - name: %s\n      - version: %s\n      - size: %s\n      - MD5 Hash: %s\n      - path: %s\n" "$local_name" "$local_version" "$(convert_to_mb "$local_size")" "$local_md5" "$local_path")"
     return 0
   fi
-  [[ $show_log == true ]] && logg error "$(echo -e "No local version found in $DOWNLOAD_DIR\n   Go back to the menu and fetch it first.")"
+  [[ $show_log == true ]] && logg error "$(echo -e "No local AppImage version found in $APPIMAGE_DOWNLOAD_DIR\n   Go back to the menu and fetch it first.")"
   return 1
+}
+
+find_local_deb_version() {
+  show_log=${1:-false}
+  [[ $show_log == true ]] && spinner "Searching for a local .deb version..." "sleep 2;"
+  mkdir -p "$DEB_DOWNLOAD_DIR"
+  local_path=$(find "$DEB_DOWNLOAD_DIR" -maxdepth 1 -type f -name 'cursor_*.deb' -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)
+  if [[ -n "$local_path" ]]; then
+    local_name=$(basename "$local_path")
+    local_size=$(stat -c %s "$local_path" 2>/dev/null || echo "0")
+    local_version=$(extract_version "$local_path")
+    local_md5=$(md5sum "$local_path" | cut -d' ' -f1)
+    [[ $show_log == true ]] && logg info "$(printf "Local .deb version found:\n      - name: %s\n      - version: %s\n      - size: %s\n      - MD5 Hash: %s\n      - path: %s\n" "$local_name" "$local_version" "$(convert_to_mb "$local_size")" "$local_md5" "$local_path")"
+    return 0
+  fi
+  [[ $show_log == true ]] && logg error "$(echo -e "No local .deb version found in $DEB_DOWNLOAD_DIR\n   Go back to the menu and fetch it first.")"
+  return 1
+}
+
+# Backward compatibility
+find_local_version() {
+  find_local_appimage_version "$@"
 }
 
 download_logo() {
@@ -263,8 +288,8 @@ download_logo() {
 }
 
 download_appimage() {
-  logg prompt "Starting the download of the latest version..."
-  mkdir -p "$DOWNLOAD_DIR"
+  logg prompt "Starting the download of the latest AppImage version..."
+  mkdir -p "$APPIMAGE_DOWNLOAD_DIR"
 
   logg info "Fetching latest download URL from Cursor API..."
   DOWNLOAD_URL=$(curl -s "$CURSOR_API_ENDPOINT" | jq -r '.downloadUrl')
@@ -274,7 +299,7 @@ download_appimage() {
   fi
 
   remote_name=$(basename "$DOWNLOAD_URL")
-  output_document="$DOWNLOAD_DIR/$remote_name"
+  output_document="$APPIMAGE_DOWNLOAD_DIR/$remote_name"
 
   logg info "Downloading: $remote_name"
   if command -v wget >/dev/null; then
@@ -295,7 +320,7 @@ download_appimage() {
   local_version=$(extract_version "$local_name")
   local_md5=$(md5sum "$local_path" | cut -d' ' -f1)
 
-  logg success "Download complete!"
+  logg success "AppImage download complete!"
   logg info "  → Path: $local_path"
   logg info "  → Version: $local_version"
   logg info "  → Size: $(convert_to_mb "$local_size")"
@@ -389,17 +414,240 @@ EOF
   logg info "Try it now:  cursor .   or   cursor /path/to/project"
 }
 
-# NEW FUNCTION: Update Cursor
-update_cursor() {
-  logg prompt "Checking for Cursor updates..."
+remove_appimage_version() {
+  logg prompt "Checking for existing AppImage installation..."
 
-  # Find local version first
-  if ! find_local_version; then
-    logg error "No local Cursor installation found. Please use 'All-in-One' option to install first."
+  if find_local_appimage_version; then
+    logg warn "Found existing AppImage installation: $local_path"
+    logg info "Automatically removing AppImage version to avoid conflicts..."
+
+    # Remove AppImage file
+    if spinner "Removing AppImage file" "rm -f \"$local_path\""; then
+      logg success "AppImage file removed: $local_path"
+    else
+      logg error "Failed to remove AppImage file"
+      return 1
+    fi
+
+    # Remove desktop launchers
+    for file_path in "$SYSTEM_DESKTOP_FILE" "$USER_DESKTOP_FILE"; do
+      if [[ -f "$file_path" ]]; then
+        if spinner "Removing launcher" "rm -f \"$file_path\""; then
+          logg success "Launcher removed: $file_path"
+        else
+          logg warn "Failed to remove launcher: $file_path"
+        fi
+      fi
+    done
+
+    # Remove CLI command
+    if [[ -f "/usr/local/bin/cursor" ]]; then
+      if spinner "Removing CLI command" "sudo -S <<< \"$sudo_pass\" rm -f /usr/local/bin/cursor"; then
+        logg success "CLI command removed"
+      else
+        logg warn "Failed to remove CLI command"
+      fi
+    fi
+
+    # Remove AppArmor profile
+    if [[ -f "$APPARMOR_PROFILE" ]]; then
+      if spinner "Removing AppArmor profile" "sudo -S <<< \"$sudo_pass\" rm -f \"$APPARMOR_PROFILE\""; then
+        logg success "AppArmor profile removed"
+      else
+        logg warn "Failed to remove AppArmor profile"
+      fi
+    fi
+
+    logg success "AppImage installation completely removed!"
+  else
+    logg info "No AppImage installation found. Proceeding with .deb installation."
+  fi
+}
+
+install_cursor_deb() {
+  logg prompt "Installing Cursor using .deb package..."
+
+  # Check if Cursor is already installed via .deb
+  if dpkg -l | grep -q "^ii.*cursor"; then
+    logg warn "Cursor is already installed via .deb package"
+    if gum confirm "Do you want to reinstall/update it?" \
+      --prompt.foreground "$CLR_WRN" \
+      --selected.background "$CLR_PRI"; then
+      logg info "Proceeding with reinstallation..."
+    else
+      logg info "Installation cancelled by user."
+      return 0
+    fi
+  fi
+
+  # Remove AppImage version if exists
+  remove_appimage_version
+
+  # Fetch remote version info
+  if ! fetch_remote_version; then
+    logg error "Failed to fetch remote version information."
     return 1
   fi
 
-  logg info "Current installed version: $local_version"
+  if [[ -z "$remote_deb_url" || "$remote_deb_url" == "null" ]]; then
+    logg error "No .deb download URL available from API."
+    return 1
+  fi
+
+  local deb_filename=$(basename "$remote_deb_url")
+  local deb_path="$DEB_DOWNLOAD_DIR/$deb_filename"
+
+  # Create .deb download directory
+  mkdir -p "$DEB_DOWNLOAD_DIR"
+
+  logg info "Downloading .deb package: $deb_filename"
+  logg info "Version: $remote_version"
+  logg info "Download location: $deb_path"
+
+  # Download .deb file to dedicated folder
+  if command -v wget >/dev/null; then
+    if ! spinner "Downloading .deb package..." \
+      "wget --quiet --show-progress -O \"$deb_path\" \"$remote_deb_url\""; then
+      logg error "Failed to download .deb package"
+      return 1
+    fi
+  elif command -v curl >/dev/null; then
+    if ! spinner "Downloading .deb package..." \
+      "curl -L \"$remote_deb_url\" -o \"$deb_path\""; then
+      logg error "Failed to download .deb package"
+      return 1
+    fi
+  else
+    logg error "Neither wget nor curl is available. Please install one of them."
+    return 1
+  fi
+
+  # Install .deb package directly
+  sudo_please
+  logg prompt "Installing .deb package..."
+  if spinner "Installing Cursor .deb package..." \
+    "sudo -S <<< \"$sudo_pass\" dpkg -i \"$deb_path\""; then
+    logg success "Cursor .deb package installed successfully!"
+  else
+    logg error "Failed to install .deb package. Trying to fix dependencies..."
+    if spinner "Fixing package dependencies..." \
+      "sudo -S <<< \"$sudo_pass\" apt-get install -f -y"; then
+      logg success "Dependencies fixed and Cursor installed!"
+    else
+      logg error "Failed to install Cursor .deb package even after fixing dependencies."
+      return 1
+    fi
+  fi
+
+  show_balloon "$(echo -e "🎉 Cursor .deb installation completed! 🎈\n✨ Version: $remote_version\n🌟 Cursor is now available in your applications menu! 💻")"
+}
+
+update_cursor_deb() {
+  logg prompt "Checking for Cursor .deb updates..."
+
+  # Check if Cursor is installed via .deb
+  if ! dpkg -l | grep -q "^ii.*cursor"; then
+    logg error "Cursor is not installed via .deb package. Please use 'Install Cursor by .deb' option first."
+    return 1
+  fi
+
+  # Get current installed version
+  local current_version
+  current_version=$(dpkg -l | grep "^ii.*cursor" | awk '{print $3}' | cut -d'-' -f1)
+  logg info "Current installed version: $current_version"
+
+  # Fetch remote version info
+  if ! fetch_remote_version; then
+    logg error "Failed to fetch remote version information."
+    return 1
+  fi
+
+  # Compare versions
+  if [[ "$current_version" == "$remote_version" ]]; then
+    show_balloon "$(echo -e "🎉 You're already up to date! 🎈\n✨ Current version: $current_version\n🌟 No update needed. Happy coding! 💻")"
+    return 0
+  fi
+
+  logg info "Update available!"
+  logg info "  → Current version: $current_version"
+  logg info "  → Latest version: $remote_version"
+
+  # Ask user if they want to update
+  if gum confirm "Do you want to update to version $remote_version?" \
+    --show-help \
+    --prompt.foreground="$CLR_INF" \
+    --selected.background="$CLR_PRI"; then
+
+    # Remove AppImage version if exists
+    remove_appimage_version
+
+    if [[ -z "$remote_deb_url" || "$remote_deb_url" == "null" ]]; then
+      logg error "No .deb download URL available from API."
+      return 1
+    fi
+
+    local deb_filename=$(basename "$remote_deb_url")
+    local deb_path="$DEB_DOWNLOAD_DIR/$deb_filename"
+
+    # Create .deb download directory
+    mkdir -p "$DEB_DOWNLOAD_DIR"
+
+    logg info "Downloading .deb package: $deb_filename"
+    logg info "Download location: $deb_path"
+
+    # Download .deb file to dedicated folder
+    if command -v wget >/dev/null; then
+      if ! spinner "Downloading .deb package..." \
+        "wget --quiet --show-progress -O \"$deb_path\" \"$remote_deb_url\""; then
+        logg error "Failed to download .deb package"
+        return 1
+      fi
+    elif command -v curl >/dev/null; then
+      if ! spinner "Downloading .deb package..." \
+        "curl -L \"$remote_deb_url\" -o \"$deb_path\""; then
+        logg error "Failed to download .deb package"
+        return 1
+      fi
+    else
+      logg error "Neither wget nor curl is available. Please install one of them."
+      return 1
+    fi
+
+    # Update .deb package directly
+    sudo_please
+    logg prompt "Updating .deb package..."
+    if spinner "Updating Cursor .deb package..." \
+      "sudo -S <<< \"$sudo_pass\" dpkg -i \"$deb_path\""; then
+      logg success "Cursor .deb package updated successfully!"
+    else
+      logg error "Failed to update .deb package. Trying to fix dependencies..."
+      if spinner "Fixing package dependencies..." \
+        "sudo -S <<< \"$sudo_pass\" apt-get install -f -y"; then
+        logg success "Dependencies fixed and Cursor updated!"
+      else
+        logg error "Failed to update Cursor .deb package even after fixing dependencies."
+        return 1
+      fi
+    fi
+
+    show_balloon "$(echo -e "🎉 Cursor .deb update completed! 🎈\n✨ Updated from $current_version to $remote_version\n🌟 Ready to use the latest Cursor! 💻")"
+  else
+    logg info "Update cancelled by user."
+  fi
+}
+
+
+# NEW FUNCTION: Update Cursor
+update_cursor() {
+  logg prompt "Checking for Cursor AppImage updates..."
+
+  # Find local AppImage version first
+  if ! find_local_appimage_version; then
+    logg error "No local Cursor AppImage installation found. Please use 'All-in-One' option to install first."
+    return 1
+  fi
+
+  logg info "Current installed AppImage version: $local_version"
 
   # Fetch remote version
   if ! fetch_remote_version; then
@@ -409,19 +657,19 @@ update_cursor() {
 
   # Compare versions
   if [[ "$local_version" == "$remote_version" ]]; then
-    show_balloon "$(echo -e "🎉 You're already up to date! 🎈\n✨ Current version: $local_version\n🌟 No update needed. Happy coding! 💻")"
+    show_balloon "$(echo -e "🎉 You're already up to date! 🎈\n✨ Current AppImage version: $local_version\n🌟 No update needed. Happy coding! 💻")"
     return 0
   fi
 
   logg info "Update available!"
-  logg info "  → Current version: $local_version"
+  logg info "  → Current AppImage version: $local_version"
   logg info "  → Latest version: $remote_version"
 
   # Ask user if they want to update
   if gum confirm "Do you want to update to version $remote_version?" --show-help --prompt.foreground="$CLR_INF" --selected.background="$CLR_PRI"; then
     # Backup old version
     local backup_path="${local_path}.backup-$(date +%Y%m%d-%H%M%S)"
-    logg prompt "Creating backup of current version..."
+    logg prompt "Creating backup of current AppImage version..."
     if spinner "Backing up current version" "mv \"$local_path\" \"$backup_path\""; then
       logg success "Backup created: $backup_path"
     else
@@ -439,7 +687,7 @@ update_cursor() {
         configure_apparmor
       fi
 
-      show_balloon "$(echo -e "🎉 Update completed successfully! 🎈\n✨ Updated from $local_version to $remote_version\n🗑️  Old version backed up to:\n   $(basename "$backup_path")\n🌟 Ready to use the latest Cursor! 💻")"
+      show_balloon "$(echo -e "🎉 AppImage update completed successfully! 🎈\n✨ Updated from $local_version to $remote_version\n🗑️  Old version backed up to:\n   $(basename "$backup_path")\n🌟 Ready to use the latest Cursor! 💻")"
 
       # Ask if user wants to remove backup
       if gum confirm "Remove the backup file to save space?" --show-help --prompt.foreground="$CLR_WRN" --selected.background="$CLR_PRI"; then
@@ -469,8 +717,10 @@ menu() {
   while true; do
     # Cập nhật style options cho Gum 0.16.0
     local options=(
-      "All-in-One (fetch, download & configure all)"
-      "Update Cursor (check & update to latest version)"
+      "All-in-One (fetch, download & configure all AppImage)"
+      "Update Cursor (check & update to latest version AppImage)"
+      "Install Cursor by .deb (install using .deb package)"
+      "Update Cursor .deb (check & update .deb package)"
       "Reconfigure All (no online fetch)"
       "Setup AppArmor Profile"
       "Add 'cursor' CLI Command (bash/zsh)"
@@ -493,22 +743,28 @@ menu() {
     case "$option" in
       "All-in-One"*)
         fetch_remote_version
-        if ! find_local_version || [[ "$local_md5" != "$remote_md5" ]]; then
+        if ! find_local_appimage_version || [[ "$local_md5" != "$remote_md5" ]]; then
           download_appimage
           download_logo
           setup_launchers
           configure_apparmor
           add_cli_command
         else
-          find_local_version true
-          show_balloon "🧙 The latest version is already installed and ready to use! 🎈"
+          find_local_appimage_version true
+          show_balloon "🧙 The latest AppImage version is already installed and ready to use! 🎈"
         fi
         ;;
       "Update Cursor"*)
         update_cursor
         ;;
+      "Install Cursor by .deb"*)
+        install_cursor_deb
+        ;;
+      "Update Cursor .deb"*)
+        update_cursor_deb
+        ;;
       "Reconfigure All"*)
-        if find_local_version true; then
+        if find_local_appimage_version true; then
           download_logo
           setup_launchers
           configure_apparmor
@@ -516,12 +772,12 @@ menu() {
         fi
         ;;
       "Setup AppArmor Profile"*)
-        if find_local_version true; then
+        if find_local_appimage_version true; then
           configure_apparmor
         fi
         ;;
       "Add 'cursor' CLI Command"*)
-        if find_local_version true; then
+        if find_local_appimage_version true; then
           add_cli_command
         fi
         ;;
