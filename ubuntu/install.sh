@@ -5,8 +5,8 @@ sudo apt update
 sudo apt install vim git curl unzip firefox thunderbird openvpn tmux fzf -y
 sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 
-# Improve Laptop Battery:
-sudo apt install tlp tlp-rdw
+# Improve Laptop Battery: only for laptop
+# sudo apt install tlp tlp-rdw
 
 # install chrome
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -21,11 +21,11 @@ env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['Bamb
 
 # Install telegram
 # sudo apt install telegram-desktop
-# sudo apt install snapd
-# sudo snap install telegram-desktop
+sudo apt install snapd
+sudo snap install telegram-desktop
 
 # Install flatpak https://flatpak.org/setup/Ubuntu
-flatpak install flathub org.telegram.desktop
+# flatpak install flathub org.telegram.desktop
 
 ## NODEJS
 curl -sL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
