@@ -468,7 +468,7 @@ install_cursor_deb() {
   logg prompt "Installing Cursor using .deb package..."
 
   # Check if Cursor is already installed via .deb
-  if dpkg -l | grep -q "^ii.*cursor"; then
+  if dpkg-query -W -f='${Status}' cursor 2>/dev/null | grep -q "install ok installed"; then
     logg warn "Cursor is already installed via .deb package"
     if gum confirm "Do you want to reinstall/update it?" \
       --prompt.foreground "$CLR_WRN" \
@@ -546,14 +546,14 @@ update_cursor_deb() {
   logg prompt "Checking for Cursor .deb updates..."
 
   # Check if Cursor is installed via .deb
-  if ! dpkg -l | grep -q "^ii.*cursor"; then
+  if ! dpkg-query -W -f='${Status}' cursor 2>/dev/null | grep -q "install ok installed"; then
     logg error "Cursor is not installed via .deb package. Please use 'Install Cursor by .deb' option first."
     return 1
   fi
 
   # Get current installed version
   local current_version
-  current_version=$(dpkg -l | grep "^ii.*cursor" | awk '{print $3}' | cut -d'-' -f1)
+  current_version=$(dpkg-query -W -f='${Version}' cursor | cut -d'-' -f1)
   logg info "Current installed version: $current_version"
 
   # Fetch remote version info
@@ -754,14 +754,14 @@ menu() {
           show_balloon "🧙 The latest AppImage version is already installed and ready to use! 🎈"
         fi
         ;;
+      "Update Cursor .deb"*)
+        update_cursor_deb
+        ;;
       "Update Cursor"*)
         update_cursor
         ;;
       "Install Cursor by .deb"*)
         install_cursor_deb
-        ;;
-      "Update Cursor .deb"*)
-        update_cursor_deb
         ;;
       "Reconfigure All"*)
         if find_local_appimage_version true; then
