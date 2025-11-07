@@ -539,7 +539,27 @@ install_cursor_deb() {
     fi
   fi
 
-  show_balloon "$(echo -e "🎉 Cursor .deb installation completed! 🎈\n✨ Version: $remote_version\n🌟 Cursor is now available in your applications menu! 💻")"
+  # Clean up old .deb packages
+  logg prompt "Cleaning up old .deb packages..."
+  local cleaned_count=0
+  if [[ -d "$DEB_DOWNLOAD_DIR" ]]; then
+    # Find all .deb files except the current one
+    while IFS= read -r old_deb_file; do
+      if [[ "$old_deb_file" != "$deb_path" && -f "$old_deb_file" ]]; then
+        if spinner "Removing old package: $(basename "$old_deb_file")" "rm -f \"$old_deb_file\""; then
+          ((cleaned_count++))
+        fi
+      fi
+    done < <(find "$DEB_DOWNLOAD_DIR" -maxdepth 1 -type f -name "cursor_*.deb" 2>/dev/null)
+
+    if [[ $cleaned_count -gt 0 ]]; then
+      logg success "Cleaned up $cleaned_count old .deb package(s)"
+    else
+      logg info "No old .deb packages to clean up"
+    fi
+  fi
+
+  show_balloon "$(echo -e "🎉 Cursor .deb installation completed! 🎈\n✨ Version: $remote_version\n🧹 Cleaned up old packages\n🌟 Cursor is now available in your applications menu! 💻")"
 }
 
 update_cursor_deb() {
@@ -630,7 +650,27 @@ update_cursor_deb() {
       fi
     fi
 
-    show_balloon "$(echo -e "🎉 Cursor .deb update completed! 🎈\n✨ Updated from $current_version to $remote_version\n🌟 Ready to use the latest Cursor! 💻")"
+    # Clean up old .deb packages
+    logg prompt "Cleaning up old .deb packages..."
+    local cleaned_count=0
+    if [[ -d "$DEB_DOWNLOAD_DIR" ]]; then
+      # Find all .deb files except the current one
+      while IFS= read -r old_deb_file; do
+        if [[ "$old_deb_file" != "$deb_path" && -f "$old_deb_file" ]]; then
+          if spinner "Removing old package: $(basename "$old_deb_file")" "rm -f \"$old_deb_file\""; then
+            ((cleaned_count++))
+          fi
+        fi
+      done < <(find "$DEB_DOWNLOAD_DIR" -maxdepth 1 -type f -name "cursor_*.deb" 2>/dev/null)
+
+      if [[ $cleaned_count -gt 0 ]]; then
+        logg success "Cleaned up $cleaned_count old .deb package(s)"
+      else
+        logg info "No old .deb packages to clean up"
+      fi
+    fi
+
+    show_balloon "$(echo -e "🎉 Cursor .deb update completed! 🎈\n✨ Updated from $current_version to $remote_version\n🧹 Cleaned up old packages\n🌟 Ready to use the latest Cursor! 💻")"
   else
     logg info "Update cancelled by user."
   fi
