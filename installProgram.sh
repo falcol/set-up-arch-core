@@ -11,9 +11,9 @@ sudo systemctl enable ufw
 
 echo "install program"
 sudo pacman -S telegram-desktop
-sudo pacman -S kitty
-sudo pamac build mongodb-bin
-sudo pamac build mongodb-compass-beta-bin
+# sudo pacman -S kitty
+# sudo pamac build mongodb-bin
+# sudo pamac build mongodb-compass-beta-bin
 sudo pacman -S redis
 sudo pacman -S docker
 sudo pacman -S docker-compose
@@ -36,11 +36,13 @@ sudo pacman -S nodejs npm
 
 echo "chrome"
 
-sudo pamac install google-chrome
+sudo pamac build google-chrome
+sudo pamac build coccoc-browser-stable
+
 cd
 
 echo "vscode"
-sudo pamac install visual-studio-code-bin
+sudo pamac build visual-studio-code-bin
 cd
 
 echo "ZSH"
@@ -56,11 +58,12 @@ makepkg -si
 cd
 
 echo "font MS"
-sudo pamac install ttf-ms-fonts
-sudo pamac install ttf-fira-code
+sudo pamac build ttf-ms-fonts
+sudo pamac build ttf-fira-code
 cd
 
 echo "ibus"
 sudo pamac install ibus
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/BambooEngine/ibus-bamboo/master/archlinux/install.sh)"
+pamac build ibus-bamboo
+#bash -c "$(curl -fsSL https://raw.githubusercontent.com/BambooEngine/ibus-bamboo/master/archlinux/install.sh)"
 
