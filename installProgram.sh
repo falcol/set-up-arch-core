@@ -43,6 +43,9 @@ cd
 
 echo "vscode"
 sudo pamac build visual-studio-code-bin
+pamac build cursor-bin
+pamac build antigravity
+
 cd
 
 echo "ZSH"
@@ -60,10 +63,20 @@ cd
 echo "font MS"
 sudo pamac build ttf-ms-fonts
 sudo pamac build ttf-fira-code
+sudo pacman -S ttf-jetbrains-mono
 cd
 
 echo "ibus"
 sudo pamac install ibus
 pamac build ibus-bamboo
-#bash -c "$(curl -fsSL https://raw.githubusercontent.com/BambooEngine/ibus-bamboo/master/archlinux/install.sh)"
+sudo nano /etc/environment
+# export GTK_IM_MODULE=xim  # hoặc ibus
+# export QT_IM_MODULE=ibus
+# export XMODIFIERS=@im=ibus
+# export QT4_IM_MODULE=ibus
+# export CLUTTER_IM_MODULE=ibus
+# export GLFW_IM_MODULE=ibus
+
+# ibus-daemon -drx
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/BambooEngine/ibus-bamboo/master/archlinux/install.sh)"
 
