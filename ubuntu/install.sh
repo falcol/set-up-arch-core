@@ -79,3 +79,13 @@ git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugi
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+
+# Thiết lập theme Powerlevel10k
+sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/g' ~/.zshrc
+
+# Cấu hình plugin: Loại bỏ zsh-syntax-highlighting để tránh xung đột với fast-syntax-highlighting
+# Thứ tự: zsh-autocomplete nên đứng đầu hoặc cuối tùy sở thích, ở đây tôi để cuối để ổn định.
+sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete)/g' ~/.zshrc
+source ~/.zshrc
+sudo chsh -s $(which zsh) $(whoami)
+
