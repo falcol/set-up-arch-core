@@ -106,3 +106,35 @@ rm -f ~/.zcompdump*
 source ~/.zshrc
 sudo chsh -s $(which zsh) $(whoami)
 
+# -------------------------
+# 1. Cập nhật hệ thống và cài đặt các phụ kiện cần thiết
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+# 2. Thêm GPG key chính thức của Docker
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# 3. Thiết lập Repository cho Docker
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 4. Cài đặt Docker Engine, CLI, Containerd và Docker Compose Plugin (V2)
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 5. Cấp quyền cho User hiện tại (Để chạy docker không cần sudo)
+sudo usermod -aG docker $USER
+
+# 6. Thông báo hoàn tất
+echo "----------------------------------------------------"
+echo "Cài đặt hoàn tất! Docker version:"
+docker --version
+echo "Docker Compose version:"
+docker compose version
+echo "----------------------------------------------------"
+echo "LƯU Ý: Hãy ĐĂNG XUẤT và ĐĂNG NHẬP LẠI để quyền Docker có hiệu lực."
+
