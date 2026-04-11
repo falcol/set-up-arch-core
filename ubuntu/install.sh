@@ -9,8 +9,11 @@ sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 # sudo apt install tlp tlp-rdw
 
 # install chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-sudo dpkg -i google-chrome-stable_current_amd64.deb
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# sudo dpkg -i google-chrome-stable_current_amd64.deb
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+sudo apt install ./google-chrome-stable_current_amd64.deb -y && \
+rm google-chrome-stable_current_amd64.deb
 
 # Install ibus-bamboo
 # sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
@@ -42,6 +45,7 @@ sudo apt install nodejs -y
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
 # Click đóng mở
 gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
+gsettings set org.gnome.mutter center-new-windows true
 
 ## FONTS
 mkdir -p ~/.local/share/fonts
