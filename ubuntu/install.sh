@@ -33,7 +33,66 @@ printf "\n# Fcitx5 Configuration\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODUL
 # Install telegram
 # sudo apt install telegram-desktop
 sudo apt install snapd
-sudo snap install telegram-desktop
+# sudo snap install telegram-desktop
+#!/bin/bash
+
+# --- Cấu hình ---
+APP_NAME="telegram-desktop"
+INSTALL_DIR="$HOME/.local/share/$APP_NAME"
+BIN_LINK="/usr/local/bin/tele"
+TMP_DIR="/tmp/telegram_install"
+
+# Link tải chính thức từ Telegram.org (Tự động nhận diện bản mới nhất)
+DOWNLOAD_URL="https://telegram.org/dl/desktop/linux"
+
+echo "🚀 Bắt đầu tối ưu và cài đặt Telegram Binary (V2)..."
+
+# 1. Xóa bản Snap nếu có
+if snap list | grep -q "$APP_NAME"; then
+    echo "📦 Đang gỡ bỏ bản Snap..."
+    sudo snap remove $APP_NAME
+fi
+
+# 2. Dọn dẹp và tạo thư mục
+echo "🧹 Đang dọn dẹp..."
+rm -rf "$INSTALL_DIR"
+rm -rf "$TMP_DIR"
+mkdir -p "$INSTALL_DIR"
+mkdir -p "$TMP_DIR"
+
+# 3. Tải bản mới nhất (Sử dụng -L để đi theo đường dẫn chuyển hướng)
+echo "📥 Đang tải Telegram từ telegram.org..."
+if ! wget -L -O "$TMP_DIR/telegram.tar.xz" "$DOWNLOAD_URL"; then
+    echo "❌ Lỗi: Không thể tải xuống file. Vui lòng kiểm tra kết nối mạng!"
+    exit 1
+fi
+
+# 4. Giải nén
+echo "📂 Đang giải nén..."
+if ! tar -xvf "$TMP_DIR/telegram.tar.xz" -C "$TMP_DIR"; then
+    echo "❌ Lỗi: Giải nén thất bại!"
+    exit 1
+fi
+
+# 5. Cài đặt vào hệ thống
+echo "🏠 Đang đưa Telegram vào 'nhà mới'..."
+# Lưu ý: Giải nén ra thường có thư mục tên là 'Telegram' bên trong
+mv "$TMP_DIR/Telegram"/* "$INSTALL_DIR/"
+
+# 6. Tạo lệnh gõ nhanh 'tele'
+echo "🔗 Tạo liên kết hệ thống..."
+sudo ln -sf "$INSTALL_DIR/Telegram" "$BIN_LINK"
+
+# 7. Dọn dẹp file tạm
+rm -rf "$TMP_DIR"
+
+echo "✅ ĐÃ XONG!"
+echo "--------------------------------------------------"
+echo "👉 Gõ 'tele' để mở hoặc tìm trong Menu ứng dụng."
+echo "--------------------------------------------------"
+
+# Chạy lần đầu
+"$INSTALL_DIR/Telegram" &
 
 # Install flatpak https://flatpak.org/setup/Ubuntu
 # flatpak install flathub org.telegram.desktop
