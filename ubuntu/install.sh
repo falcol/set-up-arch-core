@@ -13,11 +13,17 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
 
 # Install ibus-bamboo
-sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
-sudo apt-get update
-sudo apt-get install ibus-bamboo -y
-ibus restart
-env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['BambooUs', 'Bamboo']" && gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
+# sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
+# sudo apt-get update
+# sudo apt-get install ibus-bamboo -y
+# ibus restart
+# env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['BambooUs', 'Bamboo']" && gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
+
+# install baboo
+sudo apt update
+sudo apt install fcitx5 fcitx5-bamboo fcitx5-config-qt -y
+im-config -n fcitx5
+printf "\n# Fcitx5 Configuration\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\n" >> ~/.zshrc && source ~/.zshrc
 
 # Install telegram
 # sudo apt install telegram-desktop
