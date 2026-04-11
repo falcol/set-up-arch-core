@@ -40,6 +40,8 @@ sudo apt install nodejs -y
 
 # Install dash to dock
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
+# Click đóng mở
+gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize-or-previews'
 
 ## FONTS
 mkdir -p ~/.local/share/fonts
@@ -74,7 +76,7 @@ vim +PlugInstall +qall
 
 # install ohmyzsh
 cd
-sudo apt install zsh-autosuggestions zsh-syntax-highlighting zsh -y
+sudo apt install zsh-autosuggestions zsh-syntax-highlighting zsh fzf -y
 # Set the default shell to zsh
 sudo chsh -s $(which zsh) $(whoami)
 # Install oh-my-zsh: https://ohmyz.sh
@@ -85,13 +87,22 @@ git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugi
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
 git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
 
 # Thiết lập theme Powerlevel10k
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="powerlevel10k\/powerlevel10k"/g' ~/.zshrc
 
 # Cấu hình plugin: Loại bỏ zsh-syntax-highlighting để tránh xung đột với fast-syntax-highlighting
 # Thứ tự: zsh-autocomplete nên đứng đầu hoặc cuối tùy sở thích, ở đây tôi để cuối để ổn định.
-sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete)/g' ~/.zshrc
+sed -i 's/plugins=(.*)/plugins=(git fzf zsh-autosuggestions zsh-history-substring-search fast-syntax-highlighting)/g' ~/.zshrc 
+echo '
+# Cấu hình phím mũi tên cho history-substring-search
+bindkey "^[[A" history-substring-search-up
+bindkey "^[[B" history-substring-search-down
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+' >> ~/.zshrc
+rm -f ~/.zcompdump* 
 source ~/.zshrc
 sudo chsh -s $(which zsh) $(whoami)
 
