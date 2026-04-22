@@ -136,6 +136,14 @@ flatpak install flathub com.mattjakeman.ExtensionManager
 
 ## 🎨 Tuỳ chỉnh Theme và Icon
 
+```bash
+mkdir -p ~/.icons
+mkdir -p ~/.themes
+tar -xJf Bibata-Modern-Ice.tar.xz -C ~/.icons
+unzip your-file.zip -d ~/.icons
+tar -xzf your-file.tar.gz -C ~/.icons
+```
+
 ### 1. Theme
 
 * Tải theme từ:
