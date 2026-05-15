@@ -11,11 +11,22 @@ sudo apt -y install dirmngr apt-transport-https lsb-release ca-certificates
 # install chrome
 # wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 # sudo dpkg -i google-chrome-stable_current_amd64.deb
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+# sudo apt install ./google-chrome-stable_current_amd64.deb -y && \
+# rm google-chrome-stable_current_amd64.deb && \
+# wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/google-chrome.gpg > /dev/null && \
+# echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
 sudo apt install ./google-chrome-stable_current_amd64.deb -y && \
 rm google-chrome-stable_current_amd64.deb && \
+
+# 2. Tạo Keyring bảo mật chuẩn
 wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/google-chrome.gpg > /dev/null && \
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
+# 3. Ghi đè cấu hình chuẩn và cập nhật lại danh sách gói
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list && \
+sudo apt update
 
 # Install ibus-bamboo
 # sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo -y
