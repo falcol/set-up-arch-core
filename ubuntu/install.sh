@@ -109,9 +109,19 @@ echo "--------------------------------------------------"
 # flatpak install flathub org.telegram.desktop
 
 ## NODEJS
-curl -sL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
-sudo bash nodesource_setup.sh
-sudo apt install nodejs -y
+# 1. Tải và thêm GPG key của NodeSource vào hệ thống
+sudo apt-get update && sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+# 2. Khai báo kho lưu trữ Node.js phiên bản 22 (v22.x)
+NODE_MAJOR=22
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+
+# 3. Cập nhật lại danh sách gói và cài đặt Node.js cùng npm
+sudo apt-get update
+sudo apt-get install nodejs -y
+
 
 # Install dash to dock
 sudo apt install gnome-tweaks gnome-shell-extensions gettext -y
