@@ -205,3 +205,7 @@ nmap <silent> <leader>ta :Tags<CR>
 nmap <silent> <leader>lc :BLines<CR>
 nmap <silent> <leader>la :Lines<CR>
 nmap <silent> <leader>m :Marks<CR>
+
+" mouse
+let &t_SI = "\e[6 q" " insert mode = beam
+let &t_EI = "\e[2 q" " normal mode = block
