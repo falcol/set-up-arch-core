@@ -38,7 +38,7 @@ sudo apt update
 
 # Install telegram
 # sudo apt install telegram-desktop
-sudo apt install snapd
+# sudo apt install snapd
 # sudo snap install telegram-desktop
 #!/bin/bash
 
@@ -220,8 +220,6 @@ echo "----------------------------------------------------"
 echo "LƯU Ý: Hãy ĐĂNG XUẤT và ĐĂNG NHẬP LẠI để quyền Docker có hiệu lực."
 
 
-
-
 # install baboo
 sudo apt update
 sudo apt install fcitx5 fcitx5-bamboo fcitx5-config-qt -y
@@ -229,20 +227,4 @@ im-config -n fcitx5
 printf "\n# Fcitx5 Configuration\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\n" >> ~/.zshrc && source ~/.zshrc
 mkdir -p ~/.config/autostart && \
 mkdir -p ~/.config/autostart && \
-# Tạo thư mục autostart và ghi đè file cấu hình fcitx5.desktop
-# Tạo file tự động khởi động (Autostart) cho Fcitx5
-mkdir -p ~/.config/autostart
-cat <<EOF > ~/.config/autostart/fcitx5.desktop
-[Desktop Entry]
-Name=Fcitx5
-Comment=Start Fcitx5 Input Method Engine
-Exec=fcitx5 -d
-Icon=org.fcitx.Fcitx5
-Type=Application
-X-GNOME-Autostart-Phase=Applications
-X-GNOME-Autostart-Delay=2
-Categories=System;Utility;
-StartupNotify=false
-Terminal=false
-EOF
-
+im-config -n fcitx5
