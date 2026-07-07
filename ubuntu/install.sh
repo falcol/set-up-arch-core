@@ -145,7 +145,7 @@ xrdb -merge ~/.Xresources
 
 echo 'export PATH="~/.local/bin:$PATH"' >> ~/.bashrc
 echo "source /usr/share/doc/fzf/examples/key-bindings.bash" >> ~/.bashrc
-echo "source /usr/share/doc/fzf/examples/completion.bash" >> ~/.bashrc
+echo "source /usr/share/bash-completion/completions/fzf" >> ~/.bashrc
 . ~/.bashrc
 
 # install vim-plug
