@@ -89,8 +89,9 @@ check_and_install_dependencies() {
 
   local gum_installed_version
   if command -v gum >/dev/null 2>&1; then
-    gum_installed_version=$(gum --version 2>/dev/null | grep -oP '\d+\.\d+\.\d+')
-    if [[ "$gum_installed_version" != "$GUM_VERSION_REQUIRED" ]]; then
+    # gum built-from-source reports "unknown" (no X.Y.Z) — keep it, skip downgrade
+    gum_installed_version=$(gum --version 2>/dev/null | grep -oP '\d+\.\d+\.\d+' || true)
+    if [[ -n "$gum_installed_version" && "$gum_installed_version" != "$GUM_VERSION_REQUIRED" ]]; then
       logg warn "Detected gum version $gum_installed_version. Downgrading to the more stable version $GUM_VERSION_REQUIRED due to known issues installed version."
       missing_packages+=("gum=$GUM_VERSION_REQUIRED")
     fi
